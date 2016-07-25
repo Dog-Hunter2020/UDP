@@ -11,27 +11,21 @@
  * @param $host string 目的主机
  * @param $port int    目的端口
  */
-function sendPackage($host,$port,$data){
+function sendPackage($host,$port,$data,$callback){
 
-    //源端口
-    $localPort=8546;
-
-    //初始化数据包
-    $package=pack('n',$localPort);
-    $package.=pack('n',$port);
-
-    //udp长度和校验和
-    $package.=pack('n',0);
-    $package.=pack('n',0);
-
+    $package=$data;
 
     $socket=socket_create(AF_INET,SOCK_DGRAM,getprotobyname('udp'));
 
     socket_sendto($socket,$package,strlen($package),0,$host,$port);
 
-    socket_close($socket);
 
+
+    //处理回调的结果的函数
+    if($callback!=null)call_user_func($callback,$socket);
+
+    socket_close($socket);
 
 }
 
-sendPackage('120.26.65.167',80,null);
+
